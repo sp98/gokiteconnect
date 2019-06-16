@@ -1,4 +1,4 @@
-module github.com/zerodhatech/gokiteconnect
+module github.com/sp98/gokiteconnect
 
 require (
 	github.com/gocarina/gocsv v0.0.0-20180809181117-b8c38cb1ba36
