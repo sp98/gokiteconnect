@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	kiteconnect "github.com/zerodhatech/gokiteconnect"
+	kiteconnect "github.com/sp98/gokiteconnect"
 )
 
 // OHLC represents OHLC packets.
