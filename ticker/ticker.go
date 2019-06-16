@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/zerodhatech/gokiteconnect"
+	kiteconnect "github.com/zerodhatech/gokiteconnect"
 )
 
 // OHLC represents OHLC packets.
@@ -97,7 +97,7 @@ type callbacks struct {
 	onMessage     func(int, []byte)
 	onNoReconnect func(int)
 	onReconnect   func(int, time.Duration)
-	onConnect     func()
+	onConnect     func([]uint32)
 	onClose       func(int, string)
 	onError       func(error)
 	onOrderUpdate func(kiteconnect.Order)
@@ -239,7 +239,7 @@ func (t *Ticker) SetReconnectMaxRetries(val int) {
 }
 
 // OnConnect callback.
-func (t *Ticker) OnConnect(f func()) {
+func (t *Ticker) OnConnect(f func(tokens []uint32)) {
 	t.callbacks.onConnect = f
 }
 
@@ -279,7 +279,8 @@ func (t *Ticker) OnOrderUpdate(f func(order kiteconnect.Order)) {
 }
 
 // Serve starts the connection to ticker server. Since its blocking its recommended to use it in go routine.
-func (t *Ticker) Serve() {
+func (t *Ticker) Serve(tokens []uint32) {
+	fmt.Println("Serve with token -- ", tokens)
 	for {
 		// If reconnect attempt exceeds max then close the loop
 		if t.reconnectAttempt > t.reconnectMaxRetries {
@@ -331,7 +332,7 @@ func (t *Ticker) Serve() {
 		t.Conn = conn
 
 		// Trigger connect callback.
-		t.triggerConnect()
+		t.triggerConnect(tokens)
 
 		// Resubscribe to stored tokens
 		if t.reconnectAttempt > 0 {
@@ -382,9 +383,9 @@ func (t *Ticker) triggerClose(code int, reason string) {
 	}
 }
 
-func (t *Ticker) triggerConnect() {
+func (t *Ticker) triggerConnect(tokens []uint32) {
 	if t.callbacks.onConnect != nil {
-		t.callbacks.onConnect()
+		t.callbacks.onConnect(tokens)
 	}
 }
 
